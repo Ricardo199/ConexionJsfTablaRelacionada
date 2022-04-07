@@ -1,0 +1,91 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="./mainTemplate.xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:define name="top">
+        top
+    </ui:define>
+
+    <ui:define name="left">
+        left
+    </ui:define>
+
+    <ui:define name="content">
+        
+        <p:growl autoUpdate="true" showDetail="true">   
+        </p:growl>
+        <h:form id="formulario">
+            
+            <p:panel id="panel" header="Gestionar Departamento">
+                <h:panelGrid columns="2" cellpadding="5" >
+                    <p:outputLabel for="departamentos" value="Nombre del departamento:" />
+                    <p:inputText id="departamentos" value="#{departamentoBean.dep.nombre}" required="true" label="Nombre del departamento"/>
+                    
+                    <p:outputLabel for="Numero" value="Numero de empleados:" />
+                    <p:inputText id="Numero" value="#{departamentoBean.dep.cantidadEmpleados}" label="Numero de empleados" required="true"/>
+                    
+                </h:panelGrid>
+
+                <p:commandButton value="Insertar" update="datos" ajax="false" actionListener="#{departamentoBean.registrar()}" icon="ui-icon-check" />
+                <p:commandButton value="Mostrar" update="datos" actionListener="#{departamentoBean.listarD()}" immediate="true"/>
+                <p:commandButton type="reset" value='limpiar'></p:commandButton>
+           </p:panel>
+                <p:dataTable id="datos" value="#{departamentoBean.listarDepto}" var="departamento">
+                    
+                    <p:column headerText="codigo"> 
+                        <p:outputLabel value="#{departamento.codigoDepartamento}"/>
+                    </p:column>
+                    <p:column headerText="Nombre departamento">
+                        <p:outputLabel value="#{departamento.nombre}"/>
+                    </p:column>
+                    <p:column headerText="Cantidad de Empleados"> 
+                        <p:outputLabel value="#{departamento.cantidadEmpleados}"/>
+                    </p:column>
+                   
+                    <p:column headerText="Modificar">
+                        <p:commandButton value="Modificar" actionListener="#{departamentoBean.seleccionar(departamento)}" oncomplete="PF('wdlgDatos').show();" update=":dlgDatos" immediate="true"/>
+                    </p:column>
+                    
+                    <p:column headerText="Eliminar">
+                        
+                        <p:commandButton value="Eliminar" actionListener="#{departamentoBean.eliminar(departamento)}" update="datos" immediate="true">
+                            <p:confirm header="Confirmation" message="¿Desea eliminar el departamento?" icon="ui-icon-alert" />
+                        </p:commandButton>
+                        
+                        
+ 
+                        <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                            <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                            <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                        </p:confirmDialog>
+                        
+                    </p:column>
+                </p:dataTable>
+                    
+        </h:form>
+        
+        <p:dialog header="Departamentos" widgetVar="wdlgDatos" id="dlgDatos">
+            <h:form>                
+                    <h:panelGrid columns="2" cellpadding="5" >
+                        <p:outputLabel value="Nombre del departamento:" />
+                        <p:inputText value="#{departamentoBean.dep.nombre}" required="true"/>
+                        
+                        <p:outputLabel value="Numero de empleados:" />
+                        <p:inputText value="#{departamentoBean.dep.cantidadEmpleados}" required="true"/>
+                        <h:panelGroup>
+                            <p:commandButton value="Modificar" actionListener="#{departamentoBean.modificar()}" update=":formulario:datos">
+                                <p:confirm header="Confirmation" message="¿Esta seguro de modificar el departamento?" icon="ui-icon-alert" />
+                            </p:commandButton>
+                            <p:commandButton value="Cancelar" immediate="true" oncomplete="PF('wdlgDatos').hide();"/>
+                        </h:panelGroup>
+                    </h:panelGrid>
+            </h:form>
+        </p:dialog>
+        
+        
+    </ui:define>
+
+</ui:composition>
