@@ -1,0 +1,261 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <body>
+
+        <ui:composition template="./mainTemplate.xhtml">
+
+            <ui:define name="top">
+                top
+            </ui:define>
+            
+            
+
+            <ui:define name="left">
+                left
+            </ui:define>
+
+            <ui:define name="content">
+                <!--Adquiriendo departamentos al cargar la pagina-->
+                #{departamentoBean.listarD()}
+                
+                <!--Adquiriendo empleados al cargar la pagina-->
+                #{empleadoBean.listarEmpleados()}
+                
+                
+                <h:form id="frmEmpleado">
+                    <p:growl id="growl" showDetail="true" autoUpdate="true"/>
+                <!--grid para motrar datos-->
+                    <h:panelGrid id="dataform" columns="3">
+                        <p:outputLabel value="Codigo de empleado: " for="codigo"/>
+                        <p:inputText id="codigo" label="Codigo"
+                                     value="#{empleadoBean.empObjetivo.codigoEmpleado}" 
+                                     disabled="true"/>                 
+                        <p:message for="codigo"/>
+                        
+                        <p:outputLabel value="Nombre: " for="nombre"/>
+                        <p:inputText id="nombre" label="nombre"
+                                     value="#{empleadoBean.empObjetivo.nombre}" 
+                                     validatorMessage="ingrese solo letras"
+                                     required="true">
+                            <!--f:validateRegex pattern="[a-zA-Z]"/-->
+                        </p:inputText>
+                        <p:message for="nombre"/>
+
+                        <p:outputLabel value="Genero: " for="genero"/>
+                        <p:selectOneRadio id="genero" label="Genero" required="true" 
+                                          value="#{empleadoBean.empObjetivo.genero}"
+                                          
+                                          validatorMessage="Debe seleccionar uno">
+                            <f:selectItem itemLabel="Masculino" itemValue="Masculino"/>
+                            <f:selectItem itemLabel="Femenino" itemValue="Femenino" />
+                        </p:selectOneRadio>
+                        <p:message for='genero'/>
+
+                        <p:outputLabel value="Edad:  " for="edad"/>
+                        <p:inputText id="edad" label="Edad"
+                                     value="#{empleadoBean.empObjetivo.edad}"
+                                     
+                                     validatorMessage="Debe especificar su edad" required="true">
+                            <f:validateDoubleRange minimum="18" maximum="80"/>
+                        </p:inputText>
+                        <p:message for='edad'/>
+                        
+                        <p:outputLabel value="Dirección:  " for="direccion"/>
+                        <p:inputText id="direccion" label="Direccion"
+                                     value="#{empleadoBean.empObjetivo.direccion}" required="true" 
+                                     
+                                     validatorMessage="Debe escribir su dirección"/>
+                        <p:message for='direccion'/>
+                                     
+                        <p:outputLabel value="Departamento: " for="departamento"/>
+                        <p:selectOneMenu id="departamento" value="#{empleadoBean.empObjetivo.departamento.codigoDepartamento}">
+                            <f:selectItems value="#{departamentoBean.listarDepto}" var="dep" itemValue="#{dep.codigoDepartamento}" 
+                                           itemLabel="#{dep.nombre}"
+                                           />
+                        </p:selectOneMenu>
+                        <p:message for='departamento'/>
+                        
+                        <p:outputLabel value="Cargo:  " for="cargo"/>                       
+                            <p:selectOneMenu id="cargo" label="Cargo"
+                                             value="#{empleadoBean.empObjetivo.cargo}">
+                                <f:selectItem itemLabel="Jefe" itemValue="Jefe"/>
+                                <f:selectItem itemLabel="Gerente" itemValue="Gerente"/>
+                                <f:selectItem itemLabel="Supervisor" itemValue="Supervisor"/>
+                                <f:selectItem itemLabel="Empleado" itemValue="Empleado"/>
+                            </p:selectOneMenu>
+                        <p:message for='cargo'/>
+                        
+                        <p:outputLabel value="Intereses: " for="intereses"/>                  
+                        <p:selectManyCheckbox id="intereses" label="Intereses"
+                                              value="#{empleadoBean.empObjetivo.intereses}">
+                            <f:selectItem itemLabel="Estudios" itemValue="Estudios"/>
+                            <f:selectItem itemLabel="Videojuegos" itemValue="Videojuegos"/>
+                            <f:selectItem itemLabel="Deportes" itemValue="Deportes"/>
+                            <f:selectItem itemLabel="Peliculas" itemValue="Peliculas"/>
+                            <f:selectItem itemLabel="Libros" itemValue="Libros"/>
+                        </p:selectManyCheckbox>
+                        <p:message for='intereses'/>
+
+                        <h:panelGroup >
+                            <p:commandButton value="Ingresar" 
+                                             actionListener="#{empleadoBean.insertarEmpleado()}" 
+                                             update="frmEmpleado" 
+                                             >
+                                <p:confirm header="Confirmación" 
+                                           message="¿Realmente desea añadir al empleado?"
+                                           />
+                            </p:commandButton>
+         
+                            <p:commandButton value="Actualizar Tabla" actionListener="#{empleadoBean.llenarPrueba()}"
+                                             update="frmEmpleado:empleados" immediate="true"/>   
+                            
+                            <p:confirmDialog global="true" 
+                                             showEffect="fade"
+                                             hideEffect="fade">
+                                <p:commandButton value="Si" 
+                                                 styleClass="ui-confirmdialog-yes"  
+                                                 />
+                                <p:commandButton value="No"
+                                                 styleClass="ui-confirmdialog-no"
+                                                 immediate="true"/>
+                            </p:confirmDialog>
+                            
+                        </h:panelGroup>     
+                    </h:panelGrid> 
+                
+                
+                    <!--Tabla de datos-->
+                    <p:dataTable id="empleados" var="emp" value="#{empleadoBean.listaEmpleados}">
+                        <p:column headerText="Codigo del Empleado">
+                            <p:outputLabel value="#{emp.codigoEmpleado}"/>
+                        </p:column>
+
+                        <p:column headerText="Nombre">
+                            <p:outputLabel value="#{emp.nombre}"/>
+                        </p:column>
+
+                        <p:column headerText="Genero">
+                            <p:outputLabel value="#{emp.genero}"/>
+                        </p:column>
+
+                        <p:column headerText="Intereses">
+                            <p:outputLabel value="#{emp.intereses}"/>
+                        </p:column>
+
+                        <p:column headerText="Edad">
+                            <p:outputLabel value="#{emp.edad}"/>
+                        </p:column>
+
+                        <p:column headerText="Dirección">
+                            <p:outputLabel value="#{emp.direccion}"/>
+                        </p:column>
+
+                        <p:column headerText="Cargo">
+                            <p:outputLabel value="#{emp.cargo}"/>
+                        </p:column>
+
+                        <p:column headerText="Departamento">
+                            <h:inputHidden value="#{emp.departamento.codigoDepartamento}"/>
+                            <p:outputLabel value="#{emp.departamento.nombre}"/>
+                        </p:column>
+                        
+                        <p:column headerText="Acciones">
+                            
+                            <p:commandButton value="Eliminar" 
+                                             actionListener="#{empleadoBean.delete(emp)}" 
+                                             update=":frmEmpleado"
+                                             immediate="true">
+                                <p:confirm header="Confirmación"
+                                    message="¿Desea eliminar el empleado?"/>
+                            </p:commandButton>
+                            
+                            <p:commandButton value="Modificar"
+                                             update=":dlgDatos" 
+                                             actionListener="#{empleadoBean.buscarEmpleado(emp)}" 
+                                             oncomplete="PF('wdlgDatos').show();" 
+                                             immediate="true"/>            
+                        </p:column>
+                    </p:dataTable>
+                </h:form> 
+                
+                <!--dialog para modificar-->
+                <p:dialog widgetVar="wdlgDatos" id="dlgDatos">
+                    <h:form>
+                        <h:panelGrid id="dataform2" columns="2">
+                            <p:outputLabel value="codigoEmpleado: " for="codigo"/>
+                            <p:inputText id="codigo" label="Codigo"
+                                         value="#{empleadoBean.empObjetivo.codigoEmpleado}" disabled="true"/>
+
+                            <p:outputLabel value="Nombre: " for="nombre"/>
+                            <p:inputText id="nombre" label="nombre"
+                                         value="#{empleadoBean.empObjetivo.nombre}" required="true"/>
+
+                            <p:outputLabel value="Genero: " for="genero"/>
+                            <p:selectOneRadio id="genero" label="Genero"
+                                              value="#{empleadoBean.empObjetivo.genero}" required="true">
+                                <f:selectItem itemLabel="Masculino" itemValue="Masculino"/>
+                                <f:selectItem itemLabel="Femenino" itemValue="Femenino" />
+                            </p:selectOneRadio>
+
+                            <p:outputLabel value="Edad:  " for="edad" />
+                            <p:inputText id="edad" label="Edad"
+                                         value="#{empleadoBean.empObjetivo.edad}" required="true"/>
+
+                            <p:outputLabel value="Dirección:  " for="direccion"/>
+                            <p:inputText id="direccion" label="Direccion"
+                                         value="#{empleadoBean.empObjetivo.direccion}" required="true"/>
+
+
+                            <p:outputLabel value="Departamento: " for="departamento" />
+                            <p:selectOneMenu id="departamento" value="#{empleadoBean.empObjetivo.departamento.codigoDepartamento}">
+                                <f:selectItems value="#{departamentoBean.listarDepto}" var="dep" itemValue="#{dep.codigoDepartamento}" 
+                                               itemLabel="#{dep.nombre}"
+                                               />
+                            </p:selectOneMenu>
+
+                            <p:outputLabel value="Cargo:  " for="cargo"/>                       
+                            <p:selectOneMenu id="cargo" label="Cargo"
+                                             value="#{empleadoBean.empObjetivo.cargo}">
+                                    <f:selectItem itemLabel="Jefe" itemValue="Jefe"/>
+                                    <f:selectItem itemLabel="Gerente" itemValue="Gerente"/>
+                                    <f:selectItem itemLabel="Supervisor" itemValue="Supervisor"/>
+                                    <f:selectItem itemLabel="Empleado" itemValue="Empleado"/>
+                                </p:selectOneMenu>
+                            
+                            <p:outputLabel value="Intereses: " for="inters"/>
+                            <p:selectManyCheckbox id="inters" label="Intereses"
+                                                  value="#{empleadoBean.empObjetivo.intereses}">
+                                <f:selectItem itemLabel="Estudios" itemValue="Estudios"/>
+                                <f:selectItem itemLabel="Videojuegos" itemValue="Videojuegos"/>
+                                <f:selectItem itemLabel="Deportes" itemValue="Deportes"/>
+                                <f:selectItem itemLabel="Peliculas" itemValue="Peliculas"/>
+                                <f:selectItem itemLabel="Libros" itemValue="Libros"/>
+                            </p:selectManyCheckbox>
+                            
+                            <h:panelGroup >
+                                <p:commandButton value="Aceptar" 
+                                                 actionListener="#{empleadoBean.modificarEmpleado()}"
+                                                 oncomplete="PF('wdlgDatos').hide();" 
+                                                 update=":frmEmpleado"
+                                                 validateClient="true">
+                                    <p:confirm header="Confirmación" 
+                                               message="¿Desea modificar el empleado?"/>
+                                </p:commandButton>
+                                
+                                <p:commandButton value='Cancelar' oncomplete="PF('wdlgDatos').hide();"/>
+                            </h:panelGroup>     
+                        </h:panelGrid> 
+                    </h:form>
+                </p:dialog>
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>
